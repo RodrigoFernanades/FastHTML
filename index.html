@@ -2,740 +2,651 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="theme-color" content="#005A9C">
-    <title>Dashboard Fast Track - FSERJ</title>
-    
-    <script src="https://cdn.jsdelivr.net/npm/apexcharts"></script>
-    <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
-
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protótipo - Mapa de Medicações Completo (Responsivo)</title>
     <style>
-        :root {
-            --primary-color: #005A9C;
-            --secondary-color: #003B66;
-            --light-blue: #E6F0F8;
-            --accent-color: #00BFFF;
-            --text-color: #333;
-            --text-light: #666;
-            --bg-color: #F8F9FA;
-            --white-color: #FFFFFF;
-            --border-color: #DEE2E6;
-            --success-color: #28A745;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
+        /* Estilos BASE (Desktop/Tablet) */
         body {
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 14px;
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: #f4f7f6;
+            color: #333;
         }
-
-        .dashboard-container {
-            max-width: 100%;
+        .container {
+            max-width: 1300px; 
             margin: 0 auto;
-            padding: 0;
+            background-color: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
-
-        .header {
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            color: var(--white-color);
-            padding: 12px 16px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        h2 {
+            color: #007bff;
+            border-bottom: 2px solid #007bff;
+            padding-bottom: 10px;
+            margin-bottom: 20px;
         }
-
-        .header-title h1 {
-            font-size: 16px;
-            margin: 0 0 4px 0;
-        }
-
-        .header-title p {
-            font-size: 11px;
-            margin: 0;
-            opacity: 0.9;
-        }
-
-        .filters-section {
-            background: var(--white-color);
-            padding: 12px;
-            margin: 10px;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .filters-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .filter-group {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .filter-group label {
-            font-size: 11px;
-            font-weight: 600;
-            color: var(--secondary-color);
-            margin-bottom: 3px;
-        }
-
-        .filter-group select {
-            width: 100%;
-            padding: 8px;
-            border: 1px solid var(--border-color);
-            border-radius: 4px;
-            font-size: 13px;
-        }
-
-        .filter-buttons {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            margin-top: 8px;
-        }
-
-        .btn {
-            padding: 10px;
-            border: none;
-            border-radius: 4px;
-            font-size: 12px;
-            font-weight: 600;
-            cursor: pointer;
-            min-height: 44px;
-        }
-
-        .btn-clear {
-            background-color: #6c757d;
-            color: var(--white-color);
-        }
-
-        .btn-export {
-            background-color: var(--success-color);
-            color: var(--white-color);
-        }
-
-        .kpi-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-            margin: 10px;
-        }
-
-        .kpi-card {
-            background: var(--white-color);
-            padding: 10px;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            border-left: 4px solid var(--primary-color);
-        }
-
-        .kpi-title {
-            font-size: 10px;
-            font-weight: 600;
-            color: var(--text-light);
-            margin-bottom: 4px;
-        }
-
-        .kpi-value {
-            font-size: 22px;
-            font-weight: 700;
-            color: var(--secondary-color);
-            margin-bottom: 2px;
-        }
-
-        .kpi-subtext {
-            font-size: 10px;
-            color: var(--text-light);
-        }
-
-        .kpi-comparison {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 6px;
-            margin-top: 6px;
-        }
-
-        .kpi-comparison > div {
-            background-color: var(--light-blue);
-            padding: 6px;
-            border-radius: 4px;
-        }
-
-        .kpi-comparison .kpi-value {
-            font-size: 18px;
-            margin-bottom: 1px;
-        }
-
-        .kpi-comparison .kpi-subtext {
-            font-size: 9px;
-        }
-
-        .charts-grid {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            margin: 10px;
-        }
-
-        .chart-card {
-            background: var(--white-color);
-            padding: 10px;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-        }
-
-        .chart-title {
-            font-size: 12px;
-            font-weight: 600;
-            color: var(--secondary-color);
-            margin-bottom: 8px;
-        }
-
-        .chart-container {
-            width: 100%;
-            height: 220px;
-        }
-
-        .table-section {
-            background: var(--white-color);
-            padding: 10px;
-            margin: 10px;
-            border-radius: 6px;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.05);
-            overflow-x: auto;
-        }
-
-        .data-cards {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-
-        .data-card {
-            background-color: var(--light-blue);
-            padding: 8px;
-            border-radius: 4px;
-            border-left: 4px solid var(--primary-color);
-            font-size: 11px;
-        }
-
-        .data-card-row {
+        .header-controls {
             display: flex;
             justify-content: space-between;
-            margin-bottom: 4px;
-            padding-bottom: 4px;
-            border-bottom: 1px solid rgba(0,0,0,0.05);
+            align-items: center;
+            margin-bottom: 15px;
         }
-
-        .data-card-row:last-child {
-            margin-bottom: 0;
-            padding-bottom: 0;
-            border-bottom: none;
+        .header-controls button {
+            background-color: #ffc107;
+            color: #333;
+            border: none;
+            padding: 10px 15px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background-color 0.3s;
         }
-
-        .data-card-label {
-            font-weight: 600;
-            color: var(--secondary-color);
-            font-size: 10px;
+        .info-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            align-items: flex-start; 
+            margin-bottom: 20px;
+            padding: 10px;
+            background-color: #e9f5ff;
+            border-radius: 4px;
         }
-
-        .data-card-value {
-            color: var(--text-color);
-            text-align: right;
-            word-break: break-word;
-            max-width: 60%;
+        .input-group {
+            display: flex;
+            align-items: center;
+            margin-right: 20px; 
+            margin-bottom: 10px; 
         }
-
-        #dataTable {
-            display: none;
+        .input-group label {
+            font-weight: bold;
+            margin-right: 10px;
+            white-space: nowrap; /* Impede que o label quebre */
+        }
+        .input-group input, .input-group select {
+            padding: 5px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+        }
+        .input-group input[type="number"] {
+            width: 60px;
+        }
+        .input-group input[type="time"] {
+            width: 80px;
+        }
+        .periodo-analisado {
+            flex-basis: 100%; 
+            margin-top: 10px;
+            font-style: italic;
+            font-size: 0.9em;
+            color: #555;
+            padding: 5px;
+            background-color: #f0f0f0;
+            border-radius: 4px;
+        }
+        /* --- Tabela de Medicações (Scroll para Mobile) --- */
+        .tabela-wrapper {
+            overflow-x: auto; /* Permite scroll horizontal na tabela */
+        }
+        .tabela-medicacao {
+            min-width: 900px; /* Garante que a tabela tenha uma largura mínima para o scroll */
             width: 100%;
             border-collapse: collapse;
+            margin-top: 10px;
         }
-
-        #dataTable th, #dataTable td {
-            padding: 8px;
-            border-bottom: 1px solid var(--border-color);
+        .tabela-medicacao th, .tabela-medicacao td {
+            border: 1px solid #ddd;
+            padding: 8px; 
             text-align: left;
-            font-size: 12px;
+            font-size: 0.9em;
+            white-space: nowrap; /* Impede que o conteúdo das células quebre */
         }
-
-        #dataTable th {
-            background-color: var(--light-blue);
-            color: var(--secondary-color);
-            font-weight: 600;
+        .tabela-medicacao th {
+            background-color: #007bff;
+            color: white;
+            font-weight: normal;
+            position: sticky;
+            top: 0;
         }
+        /* Estilos de Status (Mantidos) */
+        #historicoTable th { background-color: #6c757d; color: white; }
+        .horario-principal { background-color: #f1f8ff; font-weight: bold; text-align: center; vertical-align: middle; font-size: 1em; width: 7%; }
+        .alerta-risco { background-color: #ffdddd !important; border-left: 5px solid red; }
+        .alerta-texto { color: red; font-weight: bold; }
+        .status-administrado { background-color: #c3e6cb; color: #155724; font-weight: bold; text-align: center; }
+        .status-dispensado { background-color: #d1ecf1; color: #0c5460; font-weight: bold; text-align: center; font-size: 0.8em; }
+        .status-checado { background-color: #ffeb3b; color: #333; font-weight: bold; text-align: center; font-size: 0.8em; }
+        .checado-hora { font-size: 0.8em; font-weight: normal; display: block; margin-bottom: 5px; }
+        .historico-header { margin-top: 25px; margin-bottom: 10px; color: #6c757d; border-bottom: 1px dashed #ccc; padding-bottom: 5px; }
 
-        @media (min-width: 768px) {
-            .filters-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-                gap: 15px;
+
+        /* --- MEDIA QUERIES PARA MOBILE (smartphones e tablets pequenos) --- */
+        @media (max-width: 768px) {
+            body {
+                margin: 10px;
+            }
+            .container {
+                padding: 10px;
+            }
+            h2 {
+                font-size: 1.2em;
+                text-align: center;
+            }
+            .header-controls {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .header-controls button {
+                width: 100%;
+                margin-top: 10px;
             }
 
-            .filter-buttons {
-                grid-template-columns: auto auto;
-                gap: 10px;
-                margin-top: 0;
+            /* Otimização da barra de filtros */
+            .info-header {
+                flex-direction: column; /* Empilha os filtros verticalmente */
+            }
+            .input-group {
+                width: 100%;
+                margin-right: 0;
+                margin-bottom: 8px;
+                flex-wrap: nowrap;
+            }
+            .input-group label {
+                flex-shrink: 0; /* Impede o label de encolher */
+                min-width: 80px; /* Garante espaço mínimo para labels */
+            }
+            .input-group input, .input-group select {
+                flex-grow: 1; /* Faz os campos de input/select preencherem o resto da linha */
+                max-width: none;
             }
 
-            .kpi-grid {
-                display: grid;
-                grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-                gap: 15px;
-                margin: 20px;
-            }
-
-            .kpi-card {
-                padding: 20px;
-            }
-
-            .kpi-value {
-                font-size: 32px;
-            }
-
-            .charts-grid {
-                display: grid;
-                grid-template-columns: 1fr 1fr;
-                gap: 15px;
-                margin: 20px;
-            }
-
-            .chart-card {
-                padding: 20px;
-            }
-
-            .chart-card:nth-child(3) {
-                grid-column: 1 / -1;
-            }
-
-            .chart-container {
-                height: 350px;
-            }
-
-            .data-cards {
-                display: none;
-            }
-
-            #dataTable {
-                display: table;
-            }
-
-            .filters-section {
-                margin: 20px;
-                padding: 20px;
-            }
-
-            .table-section {
-                margin: 20px;
-                padding: 20px;
+            /* Ajuste específico para a tabela de Histórico em Mobile */
+            #historicoTable {
+                min-width: 700px; /* Garante o scroll */
             }
         }
     </style>
 </head>
 <body>
 
-<div class="dashboard-container">
-
-    <header class="header">
-        <div class="header-title">
-            <h1>Dashboard Fast Track</h1>
-            <p>FSERJ - Análise de Fluxo</p>
-        </div>
-    </header>
-
-    <section class="filters-section">
-        <div class="filters-grid">
-            <div class="filter-group">
-                <label for="filter-competencia">Competência</label>
-                <select id="filter-competencia"></select>
-            </div>
-            <div class="filter-group">
-                <label for="filter-unidade">UPA 24h</label>
-                <select id="filter-unidade"></select>
-            </div>
-            <div class="filter-group">
-                <label for="filter-risco">Classificação de Risco</label>
-                <select id="filter-risco"></select>
-            </div>
-            <div class="filter-group">
-                <label for="filter-diagnostico">Diagnóstico (CID-10)</label>
-                <select id="filter-diagnostico"></select>
-            </div>
-        </div>
-        <div class="filter-buttons">
-            <button class="btn btn-clear" onclick="clearFilters()">Limpar</button>
-            <button class="btn btn-export" onclick="exportData()">Exportar</button>
-        </div>
-    </section>
-
-    <div class="kpi-grid">
-        <div class="kpi-card" id="kpi-adesao">
-            <h3 class="kpi-title">Adesão ao Fast Track</h3>
-            <p class="kpi-value">0%</p>
-            <p class="kpi-subtext">0 FS de 0 total</p>
-        </div>
-        <div class="kpi-card" id="kpi-espera-cr">
-            <h3 class="kpi-title">Tempo Espera até CR</h3>
-            <div class="kpi-comparison">
-                <div>
-                    <p class="kpi-value">0</p>
-                    <p class="kpi-subtext">FS (min)</p>
-                </div>
-                <div>
-                    <p class="kpi-value">0</p>
-                    <p class="kpi-subtext">Geral (min)</p>
-                </div>
-            </div>
-        </div>
-        <div class="kpi-card" id="kpi-espera-atendimento">
-            <h3 class="kpi-title">Tempo Espera CR-Médico</h3>
-            <div class="kpi-comparison">
-                <div>
-                    <p class="kpi-value">0</p>
-                    <p class="kpi-subtext">FS (min)</p>
-                </div>
-                <div>
-                    <p class="kpi-value">0</p>
-                    <p class="kpi-subtext">Geral (min)</p>
-                </div>
-            </div>
-        </div>
-        <div class="kpi-card" id="kpi-taxa-adesao">
-            <h3 class="kpi-title">Taxa Adesão FS</h3>
-            <p class="kpi-value">0%</p>
-            <p class="kpi-subtext">0 finalizados de 0 FS</p>
-        </div>
-        <div class="kpi-card" id="kpi-resolutividade">
-            <h3 class="kpi-title">Resolutividade</h3>
-            <div class="kpi-comparison">
-                <div>
-                    <p class="kpi-value">0%</p>
-                    <p class="kpi-subtext">Prescrição</p>
-                </div>
-                <div>
-                    <p class="kpi-value">0%</p>
-                    <p class="kpi-subtext">Checagem</p>
-                </div>
-            </div>
-        </div>
+<div class="container">
+    <div class="header-controls">
+        <h2>📋 Mapa de Medicações - Protótipo Farmacêutico</h2>
+        <button onclick="abrirModalRelatorio()">📊 Gerar Relatório de Solicitações</button>
     </div>
 
-    <div class="charts-grid">
-        <div class="chart-card">
-            <h3 class="chart-title">Top 10 CIDs</h3>
-            <div class="chart-container" id="chart-diagnosticos"></div>
+    <div class="info-header">
+        
+        <div class="input-group">
+            <label for="paciente-select">Paciente:</label> 
+            <select id="paciente-select" onchange="renderizarMapa()">
+                <option value="P73491">73491 (José da Silva)</option>
+                <option value="P80020">80020 (Maria Santos)</option>
+                <option value="P91010">91010 (Pedro Alves)</option>
+                <option value="P12345">12345 (Ana Costa)</option>
+                <option value="all" selected>Todos os Pacientes</option>
+            </select>
         </div>
-        <div class="chart-card">
-            <h3 class="chart-title">Horários de Fluxo</h3>
-            <div class="chart-container" id="chart-sazonalidade"></div>
+        
+        <div class="input-group">
+            <label>Profissional:</label> <span id="adminName">Dr. João Silva (Farma)</span>
         </div>
-        <div class="chart-card">
-            <h3 class="chart-title">Atestado Médico</h3>
-            <div class="chart-container" id="chart-atestado"></div>
+
+        <div class="input-group">
+            <label for="data-alvo">Data Inicial:</label> 
+            <input type="date" id="data-alvo" value="2025-12-04" onchange="renderizarMapa()">
+        </div>
+        
+        <div class="input-group">
+            <label for="hora-inicio">Hora Inicial:</label> 
+            <input type="time" id="hora-inicio" value="00:00" onchange="renderizarMapa()">
+        </div>
+        
+        <div class="input-group">
+            <label for="horas-periodo">Período (H):</label> 
+            <input type="number" id="horas-periodo" value="6" min="1" max="24" onchange="renderizarMapa()">
+        </div>
+
+        <div class="input-group">
+            <label for="via-filtro">Via:</label>
+            <select id="via-filtro" onchange="renderizarMapa()">
+                <option value="all" selected>Todas as Vias</option>
+                <option value="Oral">Oral</option>
+                <option value="IV">Intravenosa (IV)</option>
+                <option value="SC">Subcutânea (SC)</option>
+                <option value="Outras">Outras</option>
+            </select>
+        </div>
+        
+        <div class="input-group">
+            <label for="status-filtro">Status:</label>
+            <select id="status-filtro" onchange="renderizarMapa()">
+                <option value="all" selected>Todos</option>
+                <option value="dispensado">Dispensados</option>
+                <option value="checado">Checados</option>
+                <option value="administrado">Administrados</option>
+                <option value="pending">Pendentes</option>
+            </select>
+        </div>
+        
+        <div class="periodo-analisado">
+            Período analisado: <span id="periodoDisplay">...</span>
         </div>
     </div>
-
-    <section class="table-section">
-        <h3 class="chart-title">Detalhes dos Atendimentos</h3>
-        <div class="data-cards" id="data-cards-container"></div>
-        <table id="dataTable">
+    
+    <h3 class="historico-header">🔙 Histórico de Doses Anteriores (Doses Administradas)</h3>
+    <div class="tabela-wrapper"> <table class="tabela-medicacao" id="historicoTable">
             <thead>
                 <tr>
-                    <th>UPA 24h</th>
-                    <th>Paciente</th>
-                    <th>Chegada</th>
-                    <th>Risco</th>
-                    <th>FS?</th>
-                    <th>Tempo</th>
-                    <th>Desfecho</th>
+                    <th style="width: 10%;">📅 Data/Hora</th>
+                    <th style="width: 15%;">Paciente</th>
+                    <th style="width: 30%;">💊 Medicamento</th>
+                    <th style="width: 15%;">Ação Realizada</th>
+                    <th style="width: 30%;">Detalhes (Profissional/Observação)</th>
                 </tr>
             </thead>
-            <tbody></tbody>
+            <tbody id="historicoTbody">
+                </tbody>
         </table>
-    </section>
+    </div>
+    
+    <hr>
+    
+    <h3 style="margin-top: 20px; color: #007bff;">⏳ Mapa de Doses Futuras / Presentes</h3>
+    <div class="tabela-wrapper"> <table class="tabela-medicacao" id="mapaTabela">
+            <thead>
+                <tr>
+                    <th>⏰ Horário</th>
+                    <th>Paciente</th>
+                    <th>💊 Medicamento</th>
+                    <th>⚖️ Dose</th>
+                    <th>💉 Via</th>
+                    <th style="width: 18%;">⚠️ Alerta / Obs.</th>
+                    <th style="width: 10%;">📦 Dispensado</th>
+                    <th style="width: 15%;">✅ Administrar (Checagem)</th>
+                </tr>
+            </thead>
+            <tbody>
+                </tbody>
+        </table>
+    </div>
 
+    <p style="margin-top: 20px;" id="statusMessage"></p>
+</div>
+
+<div id="relatorioModal" class="modal">
+  <div class="modal-content">
+    <span class="close-button" onclick="fecharModalRelatorio()">&times;</span>
+    <h3>Configuração de Relatório de Solicitações</h3>
+    <p>Em uma aplicação real, você configuraria filtros (data, tipo de solicitação, paciente) e o Back-end geraria um arquivo.</p>
+    <p><strong>Ação Simulada:</strong> Seria gerado um arquivo CSV/PDF.</p>
+    <button onclick="simularGeracao()">Gerar Relatório e Baixar</button>
+  </div>
 </div>
 
 <script>
-// --- DADOS REAIS ---
-function generateUpaData(config) {
-    const data = [];
-    const ftCount = config.ftTotal;
-    const cids = ["R520", "A09", "M545", "J039", "R05", "M255", "B349", "R11", "R51", "M791"];
-    const riscos = ["Verde", "Azul"];
+    // Armazena o status da administração para persistir entre os filtros
+    let registros = {}; 
+    
+    // --- STATUS POSSÍVEIS ---
+    const STATUS = {
+        PENDENTE: 'PENDENTE',
+        DISPENSADO: 'DISPENSADO', 
+        CHECADO: 'CHECADO',
+        ADMINISTRADO: 'ADMINISTRADO'
+    };
+    
+    // --- SIMULAÇÃO DE DADOS HISTÓRICOS ---
+    const dosesHistoricasSimuladas = [
+        { data: "2025-12-03", horario: "08:00", pacienteId: "P73491", nomeCompleto: "José da Silva", medicamentoNome: "AAS", dosagem: "100 mg", acao: STATUS.ADMINISTRADO, admin: "Enf. Ana", obs: "Dose diária." },
+        { data: "2025-12-03", horario: "12:00", pacienteId: "P80020", nomeCompleto: "Maria Santos", medicamentoNome: "Paracetamol", dosagem: "750 mg", acao: STATUS.ADMINISTRADO, admin: "Enf. Ana", obs: "Por febre (38°C)." },
+        { data: "2025-12-02", horario: "22:00", pacienteId: "P12345", nomeCompleto: "Ana Costa", medicamentoNome: "Sinvastatina", dosagem: "40 mg", acao: STATUS.ADMINISTRADO, admin: "Enf. Bia", obs: "Rotina." },
+        { data: "2025-12-02", horario: "06:00", pacienteId: "P91010", nomeCompleto: "Pedro Alves", medicamentoNome: "Insulina", dosagem: "10 UI", acao: STATUS.DISPENSADO, admin: "Farma. Clara", obs: "Dose dispensada, mas não administrada." },
+    ];
 
-    for (let i = 0; i < config.total; i++) {
-        const isFt = i < ftCount;
-        const desfecho = isFt ? (i < config.ftSuccess ? "FLUXO FAST TRACK" : "FLUXO CONVENCIONAL") : "FLUXO CONVENCIONAL";
-        const temAtestado = i < config.atestadoSim ? "Sim" : "Não";
-        
-        const baseDate = new Date(2025, 11, 1, 7 + Math.floor(Math.random() * 12), Math.floor(Math.random() * 60));
-        const acolhimento = new Date(baseDate.getTime());
-        const fimCR = new Date(acolhimento.getTime() + (config.tempoEsperaCR[isFt ? 'ft' : 'geral'] + (Math.random() - 0.5) * 4) * 60000);
-        const inicioMedico = new Date(fimCR.getTime() + (config.tempoEsperaAtend[isFt ? 'ft' : 'geral'] + (Math.random() - 0.5) * 10) * 60000);
-        
-        const temPresc = i < config.prescricao;
-        const temCheck = i < config.checagem;
 
-        data.push({
-            "UNIDADE": config.name,
-            "COMPETÊNCIA": "dezembro/2025",
-            "É FAST TRACK?": isFt ? "Sim" : "Não",
-            "NOME DO PACIENTE": `Paciente ${i + 1}`,
-            "DATA/HORA CHEGADA": baseDate.toLocaleString('pt-BR'),
-            "DATA/HORA ACOLHIMENTO": acolhimento.toLocaleString('pt-BR'),
-            "DATA/HORA FIM DA CR": fimCR.toLocaleString('pt-BR'),
-            "RISCO": riscos[Math.floor(Math.random() * riscos.length)],
-            "DATA/HORA INÍCIO DO MÉDICO": inicioMedico.toLocaleString('pt-BR'),
-            "TEMPO TOTAL NA UNIDADE": `${Math.round((inicioMedico - baseDate) / 60000) + 20} min`,
-            "CID": cids[Math.floor(Math.random() * cids.length)],
-            "ATESTADO MÉDICO?": temAtestado,
-            "DESFECHO: FLUXO FAST TRACK OU CONVENCIONAL ?": desfecho,
-            "DATA/HORA PRESCRIÇÃO": temPresc ? inicioMedico.toLocaleString('pt-BR') : "",
-            "DATA/HORA CHECAGEM": temCheck ? new Date(inicioMedico.getTime() + 2 * 60000).toLocaleString('pt-BR') : "",
+    // --- SIMULAÇÃO DA RESPOSTA DO BACK-END (Expandida) ---
+    const mapaSimuladoCompleto = [
+        // --- 06:00 ---
+        {
+            horario: "06:00",
+            administracoes: [
+                { id: 106, pacienteId: "P73491", nomeCompleto: "José da Silva", medicamentoNome: "Insulina NPH", dosagem: "15 UI", viaAdministracao: "SC", observacoes: "Ajustar conforme glicemia", prescricaoId: "P006" },
+                { id: 301, pacienteId: "P91010", nomeCompleto: "Pedro Alves", medicamentoNome: "Cefazolina", dosagem: "1g", viaAdministracao: "IV", observacoes: "Primeira dose pré-operatória.", prescricaoId: "P301" },
+            ]
+        },
+        // --- 08:00 ---
+        {
+            horario: "08:00",
+            administracoes: [
+                { id: 201, pacienteId: "P80020", nomeCompleto: "Maria Santos", medicamentoNome: "Morfina", dosagem: "2 mg", viaAdministracao: "IV", observacoes: "Alto Risco / Dor", prescricaoId: "P101", alerta: { tipo: "Vigilância", mensagem: "Medicamento de Alta Vigilância (Checagem Dupla)." } },
+                { id: 401, pacienteId: "P12345", nomeCompleto: "Ana Costa", medicamentoNome: "Amlodipino", dosagem: "10 mg", viaAdministracao: "Oral", observacoes: "Aferir PA antes de administrar.", prescricaoId: "P401" },
+            ]
+        },
+        // --- 09:20 ---
+        {
+            horario: "09:20",
+            administracoes: [
+                { id: 102, pacienteId: "P73491", nomeCompleto: "José da Silva", medicamentoNome: "AAS", dosagem: "100 mg", viaAdministracao: "Oral", observacoes: "Nenhum Alerta", prescricaoId: "P002" },
+                { 
+                    id: 103, pacienteId: "P73491", nomeCompleto: "José da Silva", medicamentoNome: "Metformina", dosagem: "850 mg", viaAdministracao: "Oral", observacoes: "Administrar após o café da manhã.", 
+                    prescricaoId: "P003",
+                    alerta: { tipo: "Interação", mensagem: "Risco de acidose lática se contraste iodado for administrado." }
+                },
+            ]
+        },
+        // --- 12:00 ---
+        {
+            horario: "12:00",
+            administracoes: [
+                { id: 202, pacienteId: "P80020", nomeCompleto: "Maria Santos", medicamentoNome: "Paracetamol", dosagem: "750 mg", viaAdministracao: "Oral", observacoes: "Se febre > 37.8°C", prescricaoId: "P102" },
+                { id: 402, pacienteId: "P12345", nomeCompleto: "Ana Costa", medicamentoNome: "Dipirona", dosagem: "1g", viaAdministracao: "IV", observacoes: "Se dor ou febre.", prescricaoId: "P402" },
+            ]
+        },
+        // --- 15:30 --- 
+        {
+            horario: "15:30",
+            administracoes: [
+                { id: 302, pacienteId: "P91010", nomeCompleto: "Pedro Alves", medicamentoNome: "Vancomicina", dosagem: "1.5g", viaAdministracao: "IV", observacoes: "Dose alta! Checar nível sérico.", 
+                    prescricaoId: "P302", 
+                    alerta: { tipo: "Dose Alta", mensagem: "Dose de 1.5g está acima do padrão para o peso do paciente (Verificar Nível Sérico)." }
+                },
+            ]
+        },
+        // --- 18:00 ---
+        {
+            horario: "18:00",
+            administracoes: [
+                { id: 105, pacienteId: "P73491", nomeCompleto: "José da Silva", medicamentoNome: "Contraste Iodado", dosagem: "100 ml", viaAdministracao: "IV", observacoes: "Administrar SOMENTE se Metformina suspensa.", prescricaoId: "P005" },
+                { id: 203, pacienteId: "P80020", nomeCompleto: "Maria Santos", medicamentoNome: "Omeprazol", dosagem: "20 mg", viaAdministracao: "Oral", observacoes: "Antes da janta.", prescricaoId: "P103" },
+            ]
+        },
+        // --- 22:00 --- 
+        {
+            horario: "22:00",
+            administracoes: [
+                { id: 403, pacienteId: "P12345", nomeCompleto: "Ana Costa", medicamentoNome: "Sinvastatina", dosagem: "40 mg", viaAdministracao: "Oral", observacoes: "Administrar ao deitar.", prescricaoId: "P403" },
+            ]
+        }
+    ];
+    
+    // --- LÓGICA DE DATAS E FILTRAGEM ---
+
+    const formatarData = (dataObj) => {
+        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+        return dataObj.toLocaleDateString('pt-BR', options);
+    };
+    
+    function atualizarPeriodoDisplay(dataInicialStr, horaInicioStr, horas) {
+        const dataHoraInicial = new Date(`${dataInicialStr}T${horaInicioStr}:00`);
+        const dataFinalMs = dataHoraInicial.getTime() + (horas * 60 * 60 * 1000) - 1; 
+        const dataFinal = new Date(dataFinalMs);
+        
+        const dataInicialFormatada = dataHoraInicial.toLocaleDateString('pt-BR', { day: 'numeric', month: 'numeric' });
+        const horaInicialFormatada = dataHoraInicial.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        const dataFinalFormatada = dataFinal.toLocaleDateString('pt-BR', { day: 'numeric', month: 'numeric' });
+        const horaFinalFormatada = dataFinal.toLocaleTimeString('pt-BR', { hour: '2-digit', minute: '2-digit' });
+        
+        const periodoTexto = 
+            `De ${dataInicialFormatada} às **${horaInicialFormatada}** até ${dataFinalFormatada} às **${horaFinalFormatada}** (${horas} horas)`;
+            
+        document.getElementById('periodoDisplay').innerHTML = periodoTexto;
+    }
+
+    // Filtra Doses Futuras/Presentes
+    function filtrarMapa(pacienteIdFiltro, viaFiltro, statusFiltro, dataAlvoStr, horaInicioStr, horasPeriodo) {
+        const mapaAgrupado = {};
+        
+        const dataHoraInicio = new Date(`${dataAlvoStr}T${horaInicioStr}:00`);
+        const dataHoraFim = new Date(dataHoraInicio.getTime() + (horasPeriodo * 60 * 60 * 1000));
+
+        mapaSimuladoCompleto.forEach(grupoHorario => {
+            const dataHoraPrescricao = new Date(`${dataAlvoStr}T${grupoHorario.horario}:00`);
+            
+            // Lógica de 24h: se o horário for anterior ao filtro, considera o dia seguinte
+            if (dataHoraPrescricao.getTime() < dataHoraInicio.getTime() && horaInicioStr !== '00:00') {
+                dataHoraPrescricao.setDate(dataHoraPrescricao.getDate() + 1);
+            }
+
+            if (dataHoraPrescricao.getTime() >= dataHoraInicio.getTime() && dataHoraPrescricao.getTime() < dataHoraFim.getTime()) {
+                
+                grupoHorario.administracoes.forEach(item => {
+                    let deveIncluir = true;
+                    
+                    const itemStatus = registros[item.id] ? registros[item.id].status : STATUS.PENDENTE;
+                    item.status = itemStatus;
+                    
+                    if (pacienteIdFiltro !== 'all' && item.pacienteId !== pacienteIdFiltro) { deveIncluir = false; }
+                    if (viaFiltro !== 'all') {
+                        if (viaFiltro === 'Outras') {
+                            if (['Oral', 'IV', 'SC'].includes(item.viaAdministracao)) { deveIncluir = false; }
+                        } else if (item.viaAdministracao !== viaFiltro) { deveIncluir = false; }
+                    }
+                    if (statusFiltro === 'dispensado' && itemStatus !== STATUS.DISPENSADO && itemStatus !== STATUS.CHECADO && itemStatus !== STATUS.ADMINISTRADO) { deveIncluir = false; } 
+                    else if (statusFiltro === 'checado' && itemStatus !== STATUS.CHECADO && itemStatus !== STATUS.ADMINISTRADO) { deveIncluir = false; } 
+                    else if (statusFiltro === 'administrado' && itemStatus !== STATUS.ADMINISTRADO) { deveIncluir = false; } 
+                    else if (statusFiltro === 'pending' && itemStatus !== STATUS.PENDENTE) { deveIncluir = false; }
+
+                    if (deveIncluir) {
+                        const chaveHorario = grupoHorario.horario;
+                        if (!mapaAgrupado[chaveHorario]) {
+                            mapaAgrupado[chaveHorario] = { horario: chaveHorario, administracoes: [] };
+                        }
+                        mapaAgrupado[chaveHorario].administracoes.push(item);
+                    }
+                });
+            }
+        });
+
+        return Object.values(mapaAgrupado).sort((a, b) => {
+            const timeA = a.horario.split(':').map(Number);
+            const timeB = b.horario.split(':').map(Number);
+            if (timeA[0] !== timeB[0]) return timeA[0] - timeB[0];
+            return timeA[1] - timeB[1];
         });
     }
-    return data;
-}
 
-const upaConfigs = [
-    { name: "UPA Botafogo", total: 456, ftTotal: 51, ftSuccess: 29, prescricao: 21, checagem: 21, atestadoSim: 7, tempoEsperaCR: { ft: 10, geral: 9 }, tempoEsperaAtend: { ft: 26, geral: 64 } },
-    { name: "UPA Campo Grande II", total: 451, ftTotal: 56, ftSuccess: 24, prescricao: 34, checagem: 34, atestadoSim: 31, tempoEsperaCR: { ft: 13, geral: 10 }, tempoEsperaAtend: { ft: 75, geral: 41 } },
-    { name: "UPA Engenho Novo", total: 422, ftTotal: 92, ftSuccess: 37, prescricao: 58, checagem: 58, atestadoSim: 14, tempoEsperaCR: { ft: 9, geral: 11 }, tempoEsperaAtend: { ft: 64, geral: 49 } },
-    { name: "UPA Itaboraí", total: 326, ftTotal: 74, ftSuccess: 38, prescricao: 44, checagem: 44, atestadoSim: 20, tempoEsperaCR: { ft: 12, geral: 11 }, tempoEsperaAtend: { ft: 9, geral: 13 } },
-    { name: "UPA Jacarepaguá", total: 600, ftTotal: 16, ftSuccess: 4, prescricao: 11, checagem: 11, atestadoSim: 5, tempoEsperaCR: { ft: 8, geral: 9 }, tempoEsperaAtend: { ft: 30, geral: 39 } },
-    { name: "UPA Marechal Hermes", total: 442, ftTotal: 63, ftSuccess: 49, prescricao: 32, checagem: 32, atestadoSim: 17, tempoEsperaCR: { ft: 11, geral: 10 }, tempoEsperaAtend: { ft: 24, geral: 25 } },
-    { name: "UPA Mesquita", total: 607, ftTotal: 2, ftSuccess: 2, prescricao: 0, checagem: 0, atestadoSim: 0, tempoEsperaCR: { ft: 28, geral: 11 }, tempoEsperaAtend: { ft: 1, geral: 48 } },
-    { name: "UPA Ricardo de Albuquerque", total: 414, ftTotal: 0, ftSuccess: 0, prescricao: 0, checagem: 0, atestadoSim: 0, tempoEsperaCR: { ft: 0, geral: 10 }, tempoEsperaAtend: { ft: 0, geral: 58 } },
-    { name: "UPA Santa Cruz", total: 609, ftTotal: 119, ftSuccess: 71, prescricao: 51, checagem: 51, atestadoSim: 27, tempoEsperaCR: { ft: 11, geral: 8 }, tempoEsperaAtend: { ft: 35, geral: 27 } }
-];
+    // --- RENDERIZAÇÃO DO HISTÓRICO (Mantida) ---
+    function renderizarHistorico(pacienteIdFiltro) {
+        const tbody = document.getElementById('historicoTbody');
+        tbody.innerHTML = '';
+        
+        let dosesFiltradas = dosesHistoricasSimuladas.filter(dose => 
+            pacienteIdFiltro === 'all' || dose.pacienteId === pacienteIdFiltro
+        );
+        
+        if (dosesFiltradas.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align: center; font-style: italic; color: #777;">Nenhum registro histórico encontrado para este paciente.</td></tr>';
+            return;
+        }
 
-const rawData = upaConfigs.flatMap(config => generateUpaData(config));
+        dosesFiltradas.forEach(dose => {
+            const tr = document.createElement('tr');
+            
+            let statusText;
+            let statusClass;
 
-function parseDate(str) {
-    if (!str || typeof str !== 'string' || !str.includes(' ')) return null;
-    const [date, time] = str.split(', ');
-    const [day, month, year] = date.split('/');
-    const d = new Date(`${year}-${month}-${day}T${time}`);
-    return isNaN(d) ? null : d;
-}
+            if (dose.acao === STATUS.ADMINISTRADO) {
+                statusText = '✅ Administrado';
+                statusClass = 'status-administrado';
+            } else if (dose.acao === STATUS.DISPENSADO) {
+                statusText = '📦 Dispensado';
+                statusClass = 'status-dispensado';
+            } else {
+                statusText = dose.acao;
+                statusClass = '';
+            }
 
-const processedData = rawData.map(d => {
-    const inicioAcolhimento = parseDate(d['DATA/HORA ACOLHIMENTO']);
-    const fimCR = parseDate(d['DATA/HORA FIM DA CR']);
-    const inicioMedico = parseDate(d['DATA/HORA INÍCIO DO MÉDICO']);
+            tr.innerHTML = `
+                <td>${dose.data.split('-').reverse().join('/')} ${dose.horario}</td>
+                <td>${dose.pacienteId.substring(1)} (${dose.nomeCompleto.split(' ')[0]})</td>
+                <td>${dose.medicamentoNome} ${dose.dosagem}</td>
+                <td class="${statusClass}">${statusText}</td>
+                <td>${dose.admin}: ${dose.obs}</td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
 
-    d.tempo_espera_ate_cr = (fimCR && inicioAcolhimento) ? (fimCR - inicioAcolhimento) / (1000 * 60) : 0;
-    d.tempo_espera_ate_atendimento = (inicioMedico && fimCR) ? (inicioMedico - fimCR) / (1000 * 60) : 0;
-    d.hora_fim_cr = fimCR ? fimCR.getHours() : null;
-    d.tem_prescricao = !!(d['DATA/HORA PRESCRIÇÃO']);
-    d.tem_checagem = d.tem_prescricao && !!(d['DATA/HORA CHECAGEM']);
-    
-    return d;
-});
 
-let chartDiagnosticos, chartAtestado, chartSazonalidade;
+    // --- AÇÕES DE FLUXO DE TRABALHO (Mantida) ---
 
-document.addEventListener('DOMContentLoaded', function() {
-    populateFilters();
-    addFilterListeners();
-    updateDashboard();
-});
+    function registrarAcao(idDose, acao) {
+        const nomeItem = encontrarItemPorId(idDose).medicamentoNome;
+        const adminName = document.getElementById('adminName').textContent;
+        const dataHora = new Date().toLocaleTimeString();
+        let novoStatus;
 
-function populateFilters() {
-    const competencias = [...new Set(processedData.map(d => d['COMPETÊNCIA']))];
-    const unidades = [...new Set(processedData.map(d => d['UNIDADE']))];
-    const riscos = [...new Set(processedData.map(d => d['RISCO']))];
-    const cids = ["A060 - DISENTERIA AMEBIANA AGUDA","A09 - DIARREIA E GASTROENTERITE DE ORIGEM INFECCIOSA PRESUMIVEL","A15 - TUBERCULOSE RESPIRATORIA COM CONFIRMACAO BACTERIOLOGICA E HISTOLOGICA","A158 - OUTRAS FORMAS DE TUBERCULOSE DAS VIAS RESPIRATORIAS, COM CONFIRMACAO BACTERIOLOGICA E HISTOLOGICA","A220 - CARBUNCULO CUTANEO","A311 - INFECCAO CUTANEA MICOBACTERIANA","A38 - ESCARLATINA","A46 - ERISIPELA","A49 - INFECCAO BACTERIANA DE LOCALIZACAO NAO ESPECIFICADA","A499 - INFECCAO BACTERIANA NAO ESPECIFICADA","A54 - INFECCAO GONOCOCICA","A689 - FEBRE RECORRENTE NAO ESPECIFICADA","A881 - VERTIGEM EPIDEMICA","A90 - DENGUE [DENGUE CLASSICO]","A928 - OUTRAS FEBRES VIRAIS ESPECIFICADAS TRANSMITIDAS POR MOSQUITOS","A96 - FEBRE HEMORRAGICA POR ARENAVIRUS","B008 - EXANTEMA SÚBITO","B009 - INFECCAO VIRAL NAO ESPECIFICADA","B00 - INFECCOES PELO VIRUS HERPES","B018 - OUTRAS FORMAS NAO ESPECIFICADAS DE INFECCAO PELO VIRUS HERPES","B02 - ZOSTER [HERPES ZOSTER]","B020 - MENINGITE POR HERPES ZOSTER","B021 - MENINGOENCEFALITE POR HERPES ZOSTER","B025 - ACOMETIMENTO DOS OLHOS NO HERPES ZOSTER","B029 - HERPES ZOSTER SEM COMPLICACOES","B059 - SARAMPO SEM COMPLICACOES","B080 - OUTRAS INFECCOES A VÍRUS ESPECIFICADAS","B082 - MOLUSCO CONTAGIOSO","B083 - DOENCA DE GIANOTTI-CROSTI","B085 - EXANTEMA POR ENTEROVIRUS","B087 - OUTRAS INFECCOES ESPECIFICADAS POR VIRUS","B088 - OUTRAS INFECCOES DE LOCALIZACAO NAO ESPECIFICADA POR VIRUS","B089 - INFECCAO VIRAL NAO ESPECIFICADA","B090 - SEQUELAS DE ARBOVIROSE","B099 - SEQUELAS DE OUTRAS DOENCAS VIRAIS","B150 - HEPATITE A COM ICTERICIA","B159 - HEPATITE A SEM ICTERICIA","B182 - HEPATITE C CRONICA","B20 - DOENCA PELO VÍRUS DA IMUNODEFICIÊNCIA HUMANA [HIV]","B259 - CITOMEGALOVIROSE NÃO ESPECIFICADA","B34 - INFECÇÃO VIRAL DE LOCALIZAÇÃO NÃO ESPECIFICADA","B349 - INFECCAO VIRAL NAO ESPECIFICADA","B352 - TINHA DOS PÉS","B358 - OUTRAS DERMATOFITOSES","B359 - DERMATOFITOSE NAO ESPECIFICADA","B388 - OUTRAS MINASICOS","B389 - MICOSE NAO ESPECIFICADA","B432 - CROMOBLASTOMICOSE","B450 - ESPOROTRICOSE","B469 - OUTRAS MICETOSES NAO ESPECIFICADAS","B480 - PARACOCCIDIOIDOMICOSE","B49 - MICOSE, NAO ESPECIFICADA","B522 - MALARIA DEVIDA A PLASMODIUM MALARIAE","B523 - MALARIA DEVIDA A PLASMODIUM OVALE","B529 - MALARIA NAO ESPECIFICADA","B59 - PNEUMOCISTOSE","B76 - ANQUILOSTOMÍASE","B77 - ASCARIDÍASE","B780 - TRICURÍASE","B86 - ESCABIOSE [SARNA]","B852 - PEDICULOSE NAO ESPECIFICADA","B87 - MIIASE","C020 - NEOPLASIA MALIGNA DA LINGUA","C34 - NEOPLASIA MALIGNA DOS BRONQUIOS E DOS PULMOES","C538 - NEOPLASIA MALIGNA DO COLO DO UTERO COM LESAO INVASIVA","D259 - LEIOMIOMA DO UTERO, NAO ESPECIFICADO","D50 - ANEMIA POR DEFICIENCIA DE FERRO","D53 - OUTRAS ANEMIAS NUTRICIONAIS","D570 - ANEMIA FALCIFORME COM CRISE","D649 - ANEMIA NAO ESPECIFICADA","E11 - DIABETES MELLITUS NÃO INSULINO DEPENDENTE","E119 - DIABETES MELLITUS NÃO INSULINO DEPENDENTE SEM COMPLICAÇÕES","E161 - OUTRA HIPOGLICEMIA","E162 - HIPOGLICEMIA NAO ESPECIFICADA"];
+        if (acao === 'DISPENSAR') {
+            novoStatus = STATUS.DISPENSADO;
+            alert(`Confirma a DISPENSA de ${nomeItem}?`);
+        } else if (acao === 'CHECAR') {
+            novoStatus = STATUS.CHECADO;
+            alert(`Confirma a checagem (preparo) de ${nomeItem} às ${dataHora}?`);
+        } else if (acao === 'ADMINISTRAR') {
+            novoStatus = STATUS.ADMINISTRADO;
+            
+            const itemRegistro = registros[idDose];
 
-    document.getElementById('filter-competencia').innerHTML = '<option value="">Todos</option>' + competencias.map(c => `<option value="${c}">${c}</option>`).join('');
-    document.getElementById('filter-unidade').innerHTML = '<option value="">Todas</option>' + unidades.sort().map(u => `<option value="${u}">${u}</option>`).join('');
-    document.getElementById('filter-risco').innerHTML = '<option value="">Todos</option>' + riscos.map(r => `<option value="${r}">${r}</option>`).join('');
-    document.getElementById('filter-diagnostico').innerHTML = '<option value="">Todos</option>' + cids.sort().map(c => `<option value="${c}">${c}</option>`).join('');
-}
+            if (!itemRegistro || (itemRegistro.status !== STATUS.CHECADO && itemRegistro.status !== STATUS.DISPENSADO)) {
+                 if (!confirm(`ATENÇÃO: ${nomeItem} não foi checado. Deseja registrar a administração diretamente?`)) {
+                    return;
+                }
+            } else if (!confirm(`Confirma a ADMINISTRAÇÃO de ${nomeItem}?`)) {
+                return;
+            }
+        } else {
+            return;
+        }
 
-function addFilterListeners() {
-    ['filter-competencia', 'filter-unidade', 'filter-risco', 'filter-diagnostico'].forEach(id => {
-        document.getElementById(id).addEventListener('change', updateDashboard);
-    });
-}
+        registros[idDose] = {
+            status: novoStatus,
+            admin: adminName,
+            dataHora: dataHora
+        };
+        
+        document.getElementById('statusMessage').innerHTML = 
+            `<span style="color: ${novoStatus === STATUS.ADMINISTRADO ? 'green' : 'blue'};">✅ Status **${novoStatus}** de **${nomeItem}** registrado às ${dataHora} por ${adminName}.</span>`;
+        
+        renderizarMapa(); 
+    }
 
-function clearFilters() {
-    ['filter-competencia', 'filter-unidade', 'filter-risco', 'filter-diagnostico'].forEach(id => {
-        document.getElementById(id).value = "";
-    });
-    updateDashboard();
-}
+    function encontrarItemPorId(id) {
+        for (const grupo of mapaSimuladoCompleto) {
+            for (const item of grupo.administracoes) {
+                if (item.id === id) {
+                    return item;
+                }
+            }
+        }
+        return null;
+    }
 
-function getFilteredData() {
-    const comp = document.getElementById('filter-competencia').value;
-    const unid = document.getElementById('filter-unidade').value;
-    const risc = document.getElementById('filter-risco').value;
-    const diag = document.getElementById('filter-diagnostico').value;
+    function renderizarMapa() {
+        const dataAlvo = document.getElementById('data-alvo').value;
+        const horaInicio = document.getElementById('hora-inicio').value;
+        const horasPeriodo = parseInt(document.getElementById('horas-periodo').value) || 6; 
+        const pacienteIdFiltro = document.getElementById('paciente-select').value;
+        const viaFiltro = document.getElementById('via-filtro').value;
+        const statusFiltro = document.getElementById('status-filtro').value; 
 
-    return processedData.filter(d => 
-        (comp === "" || d['COMPETÊNCIA'] === comp) &&
-        (unid === "" || d['UNIDADE'] === unid) &&
-        (risc === "" || d['RISCO'] === risc) &&
-        (diag === "" || d['CID'] === diag)
-    );
-}
+        atualizarPeriodoDisplay(dataAlvo, horaInicio, horasPeriodo);
+        
+        // 1. Renderiza o Histórico
+        renderizarHistorico(pacienteIdFiltro);
 
-function updateDashboard() {
-    const data = getFilteredData();
-    const totalAtendimentos = data.length;
-    const ftAtendimentos = data.filter(d => d['É FAST TRACK?'] === 'Sim');
+        // 2. Filtra e Renderiza o Mapa Atual/Futuro
+        const mapaRenderizado = filtrarMapa(pacienteIdFiltro, viaFiltro, statusFiltro, dataAlvo, horaInicio, horasPeriodo);
 
-    updateKPIs(data, totalAtendimentos, ftAtendimentos);
-    updateCharts(ftAtendimentos);
-    updateTable(data);
-}
+        const tbody = document.querySelector('#mapaTabela tbody');
+        tbody.innerHTML = ''; 
 
-function updateKPIs(data, totalAtendimentos, ftAtendimentos) {
-    const percAdesao = totalAtendimentos > 0 ? (ftAtendimentos.length / totalAtendimentos) * 100 : 0;
-    document.querySelector('#kpi-adesao .kpi-value').textContent = `${percAdesao.toFixed(2)}%`;
-    document.querySelector('#kpi-adesao .kpi-subtext').textContent = `${ftAtendimentos.length} FS de ${totalAtendimentos}`;
+        if (mapaRenderizado.length === 0) {
+            tbody.innerHTML = '<tr><td colspan="8" style="text-align: center;">Nenhuma medicação programada que corresponda aos filtros de tempo e paciente.</td></tr>';
+            return;
+        }
 
-    const mediaEsperaAteCR_FT = ftAtendimentos.length > 0 ? ftAtendimentos.reduce((acc, d) => acc + d.tempo_espera_ate_cr, 0) / ftAtendimentos.length : 0;
-    const mediaEsperaAteCR_Geral = data.length > 0 ? data.reduce((acc, d) => acc + d.tempo_espera_ate_cr, 0) / data.length : 0;
-    document.querySelector('#kpi-espera-cr .kpi-comparison div:first-child .kpi-value').textContent = Math.round(mediaEsperaAteCR_FT);
-    document.querySelector('#kpi-espera-cr .kpi-comparison div:last-child .kpi-value').textContent = Math.round(mediaEsperaAteCR_Geral);
+        mapaRenderizado.forEach(grupoHorario => {
+            grupoHorario.administracoes.forEach((item, index) => {
+                const tr = document.createElement('tr');
+                
+                if (item.alerta) {
+                    tr.classList.add('alerta-risco');
+                }
+                
+                if (index === 0) {
+                    const tdHorario = document.createElement('td');
+                    tdHorario.rowSpan = grupoHorario.administracoes.length;
+                    tdHorario.classList.add('horario-principal');
+                    tdHorario.textContent = grupoHorario.horario;
+                    tr.appendChild(tdHorario);
+                }
 
-    const mediaEsperaAtendimento_FT = ftAtendimentos.length > 0 ? ftAtendimentos.reduce((acc, d) => acc + d.tempo_espera_ate_atendimento, 0) / ftAtendimentos.length : 0;
-    const mediaEsperaAtendimento_Geral = data.length > 0 ? data.reduce((acc, d) => acc + d.tempo_espera_ate_atendimento, 0) / data.length : 0;
-    document.querySelector('#kpi-espera-atendimento .kpi-comparison div:first-child .kpi-value').textContent = Math.round(mediaEsperaAtendimento_FT);
-    document.querySelector('#kpi-espera-atendimento .kpi-comparison div:last-child .kpi-value').textContent = Math.round(mediaEsperaAtendimento_Geral);
+                tr.innerHTML += `
+                    <td>${item.pacienteId.substring(1)} (${item.nomeCompleto.split(' ')[0]})</td>
+                    <td>${item.medicamentoNome}</td>
+                    <td>${item.dosagem}</td>
+                    <td>${item.viaAdministracao}</td>
+                    <td class="${item.alerta ? 'alerta-texto' : ''}">
+                        ${item.alerta ? `⚠️ ${item.alerta.tipo}: ${item.alerta.mensagem}` : item.observacoes}
+                    </td>
+                `;
 
-    const finalizadosEmFS = ftAtendimentos.filter(d => d['DESFECHO: FLUXO FAST TRACK OU CONVENCIONAL ?'] === 'FLUXO FAST TRACK');
-    const percTaxaAdesao = ftAtendimentos.length > 0 ? (finalizadosEmFS.length / ftAtendimentos.length) * 100 : 0;
-    document.querySelector('#kpi-taxa-adesao .kpi-value').textContent = `${percTaxaAdesao.toFixed(2)}%`;
-    document.querySelector('#kpi-taxa-adesao .kpi-subtext').textContent = `${finalizadosEmFS.length} de ${ftAtendimentos.length}`;
+                // Coluna DISPENSADO
+                const tdDispensa = document.createElement('td');
+                
+                if (item.status === STATUS.PENDENTE) {
+                    tdDispensa.innerHTML = `<button class="btn-acao" style="background-color:#007bff;" onclick="registrarAcao(${item.id}, 'DISPENSAR')">Dispensar</button>`;
+                } else {
+                    tdDispensa.className = 'status-dispensado';
+                    tdDispensa.textContent = `Disp. ${registros[item.id] ? registros[item.id].dataHora : ''}`;
+                }
+                tr.appendChild(tdDispensa);
 
-    const comPrescricao = ftAtendimentos.filter(d => d.tem_prescricao);
-    const comChecagem = ftAtendimentos.filter(d => d.tem_checagem);
-    const percPrescricao = ftAtendimentos.length > 0 ? (comPrescricao.length / ftAtendimentos.length) * 100 : 0;
-    const percChecagem = comPrescricao.length > 0 ? (comChecagem.length / comPrescricao.length) * 100 : 0;
-    document.querySelector('#kpi-resolutividade .kpi-comparison div:first-child .kpi-value').textContent = `${percPrescricao.toFixed(0)}%`;
-    document.querySelector('#kpi-resolutividade .kpi-comparison div:last-child .kpi-value').textContent = `${percChecagem.toFixed(0)}%`;
-}
 
-function updateCharts(ftAtendimentos) {
-    const diagCounts = ftAtendimentos.reduce((acc, d) => {
-        if(d['CID']) { acc[d['CID']] = (acc[d['CID']] || 0) + 1; }
-        return acc;
-    }, {});
-    const top10Diags = Object.entries(diagCounts).sort((a, b) => b[1] - a[1]).slice(0, 10);
-    
-    if (chartDiagnosticos) chartDiagnosticos.destroy();
-    chartDiagnosticos = new ApexCharts(document.querySelector("#chart-diagnosticos"), {
-        series: [{ data: top10Diags.map(d => d[1]) }],
-        chart: { type: 'bar', height: 220 },
-        plotOptions: { bar: { horizontal: true, distributed: true } },
-        xaxis: { categories: top10Diags.map(d => d[0]) },
-        legend: { show: false }
-    });
-    chartDiagnosticos.render();
+                // Coluna ADMINISTRAR (CHECAGEM/STATUS FINAL)
+                const tdAdministracao = document.createElement('td');
+                tdAdministracao.style.textAlign = 'center';
+                
+                if (item.status === STATUS.PENDENTE) {
+                    tdAdministracao.className = 'status-pendente';
+                    tdAdministracao.textContent = 'Aguardando Dispensa';
+                } else if (item.status === STATUS.DISPENSADO) {
+                    tdAdministracao.innerHTML = `<button class="btn-acao" style="background-color:#ffc107; color: #333;" onclick="registrarAcao(${item.id}, 'CHECAR')">Checar</button>`;
+                } else if (item.status === STATUS.CHECADO) {
+                    tdAdministracao.className = 'status-checado';
+                    const horaChecagem = registros[item.id] ? registros[item.id].dataHora : '';
+                    tdAdministracao.innerHTML = 
+                        `<span class="checado-hora">Checado às ${horaChecagem}</span>` + 
+                        `<button class="btn-acao" style="background-color:#28a745;" onclick="registrarAcao(${item.id}, 'ADMINISTRAR')">Administrar</button>`;
+                } else if (item.status === STATUS.ADMINISTRADO) {
+                    tdAdministracao.className = 'status-administrado';
+                    tdAdministracao.textContent = `Administrado (${registros[item.id] ? registros[item.id].dataHora : ''})`;
+                }
+                tr.appendChild(tdAdministracao);
+                
+                tbody.appendChild(tr);
+            });
+        });
+    }
 
-    const atestadoSim = ftAtendimentos.filter(d => d['ATESTADO MÉDICO?'] === 'Sim').length;
-    const atestadoNao = ftAtendimentos.filter(d => d['ATESTADO MÉDICO?'] === 'Não').length;
-    
-    if (chartAtestado) chartAtestado.destroy();
-    chartAtestado = new ApexCharts(document.querySelector("#chart-atestado"), {
-        series: [{ data: [atestadoSim, atestadoNao] }],
-        chart: { type: 'bar', height: 220 },
-        plotOptions: { bar: { distributed: true } },
-        dataLabels: { enabled: true },
-        xaxis: { categories: ['Com Atestado', 'Sem Atestado'] },
-        legend: { show: false }
-    });
-    chartAtestado.render();
-
-    const horas = [7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19];
-    const atendimentosPorHora = horas.map(hora => ftAtendimentos.filter(d => d.hora_fim_cr === hora).length);
-    
-    if (chartSazonalidade) chartSazonalidade.destroy();
-    chartSazonalidade = new ApexCharts(document.querySelector("#chart-sazonalidade"), {
-        series: [{ name: 'Atendimentos', data: atendimentosPorHora }],
-        chart: { type: 'line', height: 220, zoom: { enabled: false } },
-        xaxis: { categories: horas.map(h => `${h}h`) },
-        stroke: { curve: 'smooth' },
-        colors: ['#00BFFF']
-    });
-    chartSazonalidade.render();
-}
-
-function updateTable(data) {
-    const cardsContainer = document.getElementById('data-cards-container');
-    const tableBody = document.querySelector('#dataTable tbody');
-    
-    if (data.length === 0) {
-        cardsContainer.innerHTML = '<div style="text-align:center; padding: 20px; color: #666;">Nenhum dado encontrado.</div>';
-        tableBody.innerHTML = '<tr><td colspan="7" style="text-align:center;">Nenhum dado encontrado.</td></tr>';
-        return;
+    // --- LÓGICA DO MODAL (Mantida) ---
+    function abrirModalRelatorio() { document.getElementById('relatorioModal').style.display = "block"; }
+    function fecharModalRelatorio() { document.getElementById('relatorioModal').style.display = "none"; }
+    function simularGeracao() { alert("Simulação de Geração: Arquivo de Relatório (CSV/PDF) gerado com sucesso!"); fecharModalRelatorio(); }
+    window.onclick = function(event) {
+      const modal = document.getElementById('relatorioModal');
+      if (event.target == modal) { fecharModalRelatorio(); }
     }
     
-    cardsContainer.innerHTML = data.map(d => `
-        <div class="data-card">
-            <div class="data-card-row">
-                <span class="data-card-label">UPA</span>
-                <span class="data-card-value">${d['UNIDADE']}</span>
-            </div>
-            <div class="data-card-row">
-                <span class="data-card-label">Paciente</span>
-                <span class="data-card-value">${d['NOME DO PACIENTE']}</span>
-            </div>
-            <div class="data-card-row">
-                <span class="data-card-label">Chegada</span>
-                <span class="data-card-value">${d['DATA/HORA CHEGADA']}</span>
-            </div>
-            <div class="data-card-row">
-                <span class="data-card-label">Risco</span>
-                <span class="data-card-value">${d['RISCO']}</span>
-            </div>
-            <div class="data-card-row">
-                <span class="data-card-label">FS?</span>
-                <span class="data-card-value">${d['É FAST TRACK?']}</span>
-            </div>
-            <div class="data-card-row">
-                <span class="data-card-label">Tempo</span>
-                <span class="data-card-value">${d['TEMPO TOTAL NA UNIDADE']}</span>
-            </div>
-            <div class="data-card-row">
-                <span class="data-card-label">Desfecho</span>
-                <span class="data-card-value">${d['DESFECHO: FLUXO FAST TRACK OU CONVENCIONAL ?']}</span>
-            </div>
-        </div>
-    `).join('');
-    
-    tableBody.innerHTML = data.map(d => `
-        <tr>
-            <td>${d['UNIDADE']}</td>
-            <td>${d['NOME DO PACIENTE']}</td>
-            <td>${d['DATA/HORA CHEGADA']}</td>
-            <td>${d['RISCO']}</td>
-            <td>${d['É FAST TRACK?']}</td>
-            <td>${d['TEMPO TOTAL NA UNIDADE']}</td>
-            <td>${d['DESFECHO: FLUXO FAST TRACK OU CONVENCIONAL ?']}</td>
-        </tr>
-    `).join('');
-}
-
-function exportData() {
-    const dataToExport = getFilteredData();
-    const worksheet = XLSX.utils.json_to_sheet(dataToExport);
-    const workbook = XLSX.utils.book_new();
-    XLSX.utils.book_append_sheet(workbook, worksheet, "Dados Fast Track");
-    XLSX.writeFile(workbook, "Relatorio_Fast_Track.xlsx");
-}
-
+    document.addEventListener('DOMContentLoaded', () => {
+        const now = new Date();
+        const hours = String(now.getHours()).padStart(2, '0');
+        const minutes = String(now.getMinutes()).padStart(2, '0');
+        const horaAtual = `${hours}:${minutes}`;
+        document.getElementById('hora-inicio').value = horaAtual;
+        renderizarMapa();
+    });
 </script>
 
 </body>
